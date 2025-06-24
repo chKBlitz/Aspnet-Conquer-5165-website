@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Character Not Found";
+    Layout = "_Layout";
+}
+
+<section class="page-title">
+    <div class="overlay-bg"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Character Not Found</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="login-box message-form mt-2">
+                <h3>Warning</h3>
+                <div class="se-alert error text-capitalize"><i class="fas fa-info-circle" aria-hidden="true"></i> @ViewBag.ErrorMessage</div>
+                <p class="text-center mt-3">Please log in to the game and make sure you have created a character.</p>
+                <p class="text-center"><a href="/home" class="btn btn-primary">Back to Home</a></p>
+            </div>
+        </div>
+    </div>
+</div>

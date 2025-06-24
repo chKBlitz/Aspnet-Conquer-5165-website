@@ -1,0 +1,57 @@
+﻿@model List<ConquerWeb.Models.News>
+
+@{
+    ViewData["Title"] = "News";
+    Layout = "_Layout";
+}
+
+<section class="page-title">
+    <div class="overlay-bg"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-left">
+                <h1>News</h1>
+            </div>
+            <div class="col-md-6 text-right">
+                <div aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">News</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-5 mb-5">
+    <h2>All News & Announcements</h2>
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var newsItem in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h4 class="my-0 font-weight-normal">@newsItem.Title</h4>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">@newsItem.Publish_Date.ToShortDateString() - Author: @newsItem.Author</h6>
+                            <p class="card-text">
+                                @((newsItem.Content.Length > 200 ? newsItem.Content.Substring(0, 200) + "..." : newsItem.Content))
+                            </p>
+                            <a asp-controller="News" asp-action="Details" asp-route-id="@newsItem.Id" class="btn btn-sm btn-primary">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-md-12 text-center">
+                <p>No news available at the moment.</p>
+            </div>
+        }
+    </div>
+</div>

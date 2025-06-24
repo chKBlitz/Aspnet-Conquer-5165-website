@@ -1,0 +1,109 @@
+﻿@model ConquerWeb.Models.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Kayıt Ol";
+    Layout = "_Layout";
+}
+
+<section class="page-title">
+    <div class="overlay-bg"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Kayıt Ol</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3>Yeni Hesap Oluştur</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Account" asp-action="Register" method="post">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Username" class="form-label"></label>
+                            <input asp-for="Username" class="form-control" id="usernameInput" /> @* id eklendi *@
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                            <span id="usernameAvailability" class="text-info mt-1 d-block"></span> @* Kullanılabilirlik mesajı için span *@
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="ConfirmPassword" class="form-label"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p>Zaten bir hesabınız var mı? <a href="/Login">Giriş Yap</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script type="text/javascript">
+        // Kullanıcı adı alanından çıkıldığında AJAX ile kontrol
+        $(document).ready(function () {
+            $('#usernameInput').on('blur', function () { // 'blur' alanı terk edildiğinde tetiklenir
+                var username = $(this).val();
+                var availabilitySpan = $('#usernameAvailability');
+
+                // Kullanıcı adı boş veya çok kısaysa AJAX isteği gönderme
+                if (username.length < 4) {
+                    availabilitySpan.html(''); // Mesajı temizle
+                    return;
+                }
+
+                availabilitySpan.html('Kontrol ediliyor...');
+                availabilitySpan.removeClass('text-success text-danger').addClass('text-info'); // Mesaj rengini ayarla
+
+                $.ajax({
+                    url: '@Url.Action("IsUsernameAvailable", "Account")', // AccountController içindeki IsUsernameAvailable action'ı
+                    type: 'GET',
+                    data: { username: username },
+                    success: function (isAvailable) {
+                        if (isAvailable) {
+                            availabilitySpan.html('Kullanıcı adı kullanılabilir.');
+                            availabilitySpan.removeClass('text-info text-danger').addClass('text-success');
+                        } else {
+                            availabilitySpan.html('Bu kullanıcı adı zaten kullanılıyor.');
+                            availabilitySpan.removeClass('text-info text-success').addClass('text-danger');
+                        }
+                    },
+                    error: function () {
+                        availabilitySpan.html('Kullanıcı adı kontrol edilirken bir hata oluştu.');
+                        availabilitySpan.removeClass('text-info text-success').addClass('text-danger');
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,95 @@
+﻿@model List<ConquerWeb.Models.TopPlayer>
+
+@{
+    ViewData["Title"] = "Player Rankings";
+    Layout = "_Layout";
+}
+
+<section class="page-title">
+    <div class="overlay-bg"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-left">
+                <h1>Player Rankings</h1>
+            </div>
+            <div class="col-md-6 text-right">
+                <div aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Rankings</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<main class="content">
+    <div class="block-top-page news-news">
+        <div class="block-title-news">
+            <h1>@ViewData["Title"]</h1>
+        </div>
+
+        <div class="content-news">
+            <div class="fast-button flex-s-c">
+                <div class="download-block fast-link">
+                    <a href="/Ranking"><span>Player</span><br><p>Ranking</p></a>
+                </div>
+                <div class="registration-block fast-link">
+                    <a href="/Ranking/Guild"><span>Guild</span><br><p>Ranking</p></a>
+                </div>
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+
+            <table class="nice_table" border="0" cellspacing="5" cellpadding="1">
+                <thead>
+                    <tr>
+                        <td width="4%" align="center"></td>
+                        <td width="4%">Name</td>
+                        <td width="4%">Level</td>
+                        <td width="5%">Class</td>
+                        <td width="4%">Guild</td>
+                        <td width="4%">Nobility</td>
+                        <td width="4%">VIP Level</td>
+                        <td width="4%">Spouse</td>
+                        <td width="4%">Avatar</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        int rank = 1;
+                        foreach (var player in Model)
+                        {
+                            <tr>
+                                <td class="center">@(rank++)°</td>
+                                <td class="orange">@player.Name</td>
+                                <td class="center">@player.Level</td>
+                                <td class="center">@player.JobName</td>
+                                <td class="center">@player.GuildName</td>
+                                <td class="center">@player.Nobility</td>
+                                <td class="center">@player.VIPLevel</td>
+                                <td class="center">@(string.IsNullOrEmpty(player.Spouse) ? "None" : player.Spouse)</td>
+                                <td class="center">@player.Avatar</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center">No players found in ranking.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="toTop-fon">
+        <div class="toTop" id="toTop"></div>
+    </div>
+</main>

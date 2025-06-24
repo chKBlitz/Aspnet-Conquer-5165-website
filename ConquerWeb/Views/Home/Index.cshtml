@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Home";
+    Layout = "_Layout";
+}
+
+<section class="jumbotron text-center">
+    <div class="container">
+        <h1 class="jumbotron-heading">Welcome to ConquerWeb!</h1>
+        <p class="lead text-muted">Online Players: <strong>@(ViewBag.OnlineStats != null ? ViewBag.OnlineStats.Online : "N/A")</strong> / @(ViewBag.OnlineStats != null ? ViewBag.OnlineStats.Max : "N/A")</p>
+        <p>
+            <a href="/Register" class="btn btn-primary my-2">Register Now!</a>
+            <a href="/Login" class="btn btn-secondary my-2">Login</a>
+        </p>
+    </div>
+</section>
+
+<div class="album py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h4 class="my-0 font-weight-normal text-center">Latest News</h4>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        @if (ViewBag.LatestNews != null && ViewBag.LatestNews.Count > 0)
+                        {
+                            <ul class="list-unstyled mt-3 mb-4 flex-grow-1">
+                                @foreach (var newsItem in ViewBag.LatestNews)
+                                {
+                                    <li>
+                                        <strong>@newsItem.Title</strong> <br />
+                                        <small class="text-muted">@newsItem.Publish_Date.ToShortDateString() - @newsItem.Author</small>
+                                    </li>
+                                    <li>@((newsItem.Content.Length > 100 ? newsItem.Content.Substring(0, 100) + "..." : newsItem.Content))</li>
+                                    <li class="mb-2"><a asp-controller="News" asp-action="Details" asp-route-id="@newsItem.Id">Read More</a></li>
+                                    <hr />
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-center flex-grow-1 d-flex align-items-center justify-content-center">No news available at the moment.</p>
+                        }
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div class="btn-group w-100">
+                                <a asp-controller="News" asp-action="Index" class="btn btn-sm btn-outline-secondary">All News</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h4 class="my-0 font-weight-normal text-center">Join Our Discord!</h4>
+                    </div>
+                    <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
+
+                        <iframe src="https://discord.com/widget?id=881976550415810601&theme=dark" width="100%" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+                        <p class="mt-3">Connect with our community, get support, and find groups to play with!</p>
+                        <a href="https://discord.gg/QjB3BwYmS5" target="_blank" class="btn btn-primary mt-auto">Join Discord</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h4 class="my-0 font-weight-normal text-center">Like Us on Facebook!</h4>
+                    </div>
+                    <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
+                        <div class="fb-page"
+                             data-href="https://www.facebook.com/Gibatekstil"
+                             data-tabs="timeline"
+                             data-width="540"
+                             data-height="500"
+                             data-small-header="false"
+                             data-adapt-container-width="true"
+                             data-hide-cover="false"
+                             data-show-facepile="true">
+                            <blockquote cite="https://www.facebook.com/Gibatekstil" class="fb-xfbml-parse-ignore">
+                                <a href="https://www.facebook.com/Gibatekstil">Your Facebook Page Name</a>
+                            </blockquote>
+                        </div>
+                        <p class="mt-3">Follow us for updates, events, and giveaways!</p>
+                        <a href="https://www.facebook.com/Gibatekstil" target="_blank" class="btn btn-primary mt-auto">Visit Our Page</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0" nonce="YOUR_NONCE_VALUE"></script>
+    <script type="text/javascript">
+
+    </script>
+}

@@ -1,0 +1,118 @@
+﻿@model PayPal.Api.Payment
+
+@{
+    ViewData["Title"] = "Payment Completed";
+    Layout = "_Layout";
+}
+
+<section class="page-title">
+    <div class="overlay-bg"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-left">
+                <h1>Payment Completed!</h1>
+            </div>
+            <div class="col-md-6 text-right">
+                <div aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Store</li>
+                        <li class="breadcrumb-item active" aria-current="page">Success</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="suceess-payment p-50 mt-5 mb-5">
+    <div class="container">
+        <span class="bordered"></span>
+        <div class="row m-auto">
+            <div class="col-md-12">
+                <div class="message-details text-center mb-3 bg-success"><h5>Payment Message Details</h5></div>
+            </div>
+            <div class="col-md-6">
+                <div class="message-details text-center"><h5>Payer Information</h5></div>
+                <div class='table-responsive'>
+                    <table class="table table-bordered main-table text-left">
+                        <tr>
+                            <td>Property</td>
+                            <td>Value</td>
+                        </tr>
+                        <tr>
+                            <td>First Name</td>
+                            <td>@Model.payer.payer_info.first_name</td>
+                        </tr>
+                        <tr>
+                            <td>Last Name</td>
+                            <td>@Model.payer.payer_info.last_name</td>
+                        </tr>
+                        <tr>
+                            <td>Email Address</td>
+                            <td>@Model.payer.payer_info.email</td>
+                        </tr>
+                        <tr>
+                            <td>City & CountryCode</td>
+                            <td>@Model.payer.payer_info.shipping_address?.city / @Model.payer.payer_info.shipping_address?.country_code</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="message-details text-center"><h5>Item Information</h5></div>
+                <div class='table-responsive'>
+                    <table class="table table-bordered main-table text-left">
+                        <tr>
+                            <td>Property</td>
+                            <td>Value</td>
+                        </tr>
+                        <tr>
+                            <td>Player Name</td>
+                            <td>@Model.transactions[0].item_list.items[0].name</td>
+                        </tr>
+                        <tr>
+                            <td>DB Scroll Amount (SKU)</td>
+                            <td>@Model.transactions[0].item_list.items[0].sku</td>
+                        </tr>
+                        <tr>
+                            <td>Price</td>
+                            <td>@Model.transactions[0].item_list.items[0].price @Model.transactions[0].item_list.items[0].currency</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="message-details text-center"><h5>Sale Information</h5></div>
+                <div class='table-responsive'>
+                    <table class="table table-bordered main-table text-left">
+                        <tr>
+                            <td>Property</td>
+                            <td>Value</td>
+                        </tr>
+                        <tr>
+                            <td>Amount Of Payments</td>
+                            <td>@Model.transactions[0].related_resources[0].sale.amount.total @Model.transactions[0].related_resources[0].sale.amount.currency</td>
+                        </tr>
+                        <tr>
+                            <td>PayPal Status</td>
+                            <td>@Model.payer.status</td>
+                        </tr>
+                        <tr>
+                            <td>Payment Status</td>
+                            <td>@Model.transactions[0].related_resources[0].sale.state</td>
+                        </tr>
+                        <tr>
+                            <td>Payment Date</td>
+                            <td>@Model.transactions[0].related_resources[0].sale.create_time</td>
+                        </tr>
+                        <tr>
+                            <td>Fee</td>
+                            <td>@Model.transactions[0].related_resources[0].sale.transaction_fee?.value @Model.transactions[0].related_resources[0].sale.transaction_fee?.currency</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

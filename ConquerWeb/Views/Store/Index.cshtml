@@ -1,0 +1,95 @@
+﻿@model List<ConquerWeb.Models.Product>
+
+@{
+    ViewData["Title"] = "Store";
+    Layout = "_Layout";
+}
+
+<section class="page-title">
+    <div class="overlay-bg"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-left">
+                <h1>Store</h1>
+            </div>
+            <div class="col-md-6 text-right">
+                <div aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Store</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-4">
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="login-box message-form mt-2">
+                    <h3>Error</h3>
+                    <div class="se-alert error text-capitalize"><i class="fas fa-info-circle" aria-hidden="true"></i> @ViewBag.ErrorMessage</div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="content1">
+            <div class="storeShop" style="display: block">
+                <div class="row3">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var product in Model)
+                        {
+                            <div class="col-md-4 mb-4">
+                                <div class="blockHome2">
+                                    <div class="h2-title h2-title-table flex-s-c">
+                                        <span>@product.ProductName</span>
+                                    </div>
+                                    <div class="product_container text-center">
+                                        <center><div class="product_img"><img class="img-fluid" src="~/images/shop/@product.ProductImage"></div></center>
+                                        <br>
+                                        <div class="product_desc"><h3>@product.ProductDesc</h3></div>
+                                        <br>
+                                        <center><div class="product_price"><h2>@product.ProductPrice.ToString("F2") @product.ProductCurrency</h2></div></center>
+                                        <div class="all-button">
+                                            <form asp-controller="Store" asp-action="ProcessPayment" method="post">
+                                                <input type="hidden" name="productId" value="@product.ProductId" />
+                                                <button type="submit" class="bupton">Buy Paypal</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-md-12 text-center">
+                            <p>No products available in the store.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (ViewBag.ErrorMessage != null && ViewBag.ErrorMessage == "You must create a character before making a donation!")
+{
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="login-box message-form mt-2">
+                    <h3>Warning</h3>
+                    <div class="se-alert error text-capitalize"><i class="fas fa-info-circle" aria-hidden="true"></i> @ViewBag.ErrorMessage</div>
+                    <p class="text-center mt-3"><a href="/home" class="btn btn-secondary">Back to Home</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

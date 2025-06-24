@@ -1,0 +1,33 @@
+﻿@model ConquerWeb.Models.News
+
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = "_Layout";
+}
+
+<section class="page-title">
+    <div class="overlay-bg"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>@Model.Title</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-5 mb-5">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 font-weight-normal">@Model.Title</h4>
+        </div>
+        <div class="card-body">
+            <h6 class="card-subtitle mb-3 text-muted">Publish Date: @Model.Publish_Date.ToShortDateString() - Author: @Model.Author</h6>
+            <div class="news-content">
+                <p>@Model.Content</p>
+            </div>
+            <hr />
+            <a asp-controller="News" asp-action="Index" class="btn btn-secondary">Back to All News</a>
+        </div>
+    </div>
+</div>
