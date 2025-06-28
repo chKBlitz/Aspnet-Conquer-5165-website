@@ -4,16 +4,19 @@ using System.Collections.Generic;
 using ConquerWeb.Models;
 using System;
 using System.Data;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ConquerWeb.Services
 {
     public class DatabaseHelper
     {
         private readonly string _connectionString;
+        private readonly IMemoryCache _cache;
 
-        public DatabaseHelper(IConfiguration configuration)
+        public DatabaseHelper(IConfiguration configuration, IMemoryCache cache)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _cache = cache;
         }
 
         public MySqlConnection GetConnection()
@@ -616,14 +619,46 @@ namespace ConquerWeb.Services
             }
             return guildList;
         }
+        public List<PaymentRecord> GetPaymentRecordsByUsername(string username)
+        {
+            var paymentRecords = new List<PaymentRecord>();
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                // CharacterName'e göre ödeme kayýtlarýný çeker
+                using (var cmd = new MySqlCommand("SELECT ID, CharacterName, Currency, Amount, Email, VIPDays, DBScrolls, PayDate, paymentscol FROM payments WHERE CharacterName = @username ORDER BY PayDate DESC", conn))
+                {
+                    cmd.Parameters.AddWithValue("@username", username);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            paymentRecords.Add(new PaymentRecord
+                            {
+                                ID = reader.GetInt32("ID"),
+                                CharacterName = reader.GetString("CharacterName"),
+                                Currency = reader.GetString("Currency"),
+                                Amount = reader.GetDecimal("Amount"),
+                                Email = reader.GetString("Email"),
+                                VIPDays = reader.IsDBNull("VIPDays") ? (int?)null : reader.GetInt32("VIPDays"),
+                                DBScrolls = reader.IsDBNull("DBScrolls") ? (int?)null : reader.GetInt32("DBScrolls"),
+                                PayDate = reader.GetDateTime("PayDate"),
+                                Paymentscol = reader.IsDBNull("paymentscol") ? null : reader.GetString("paymentscol")
+                            });
+                        }
+                    }
+                }
+            }
+            return paymentRecords;
+        }
 
         public OnlineStats GetOnlinePlayerStats()
         {
             using (var conn = GetConnection())
             {
+                conn.Open();
                 try
                 {
-                    conn.Open();
                     using (var cmd = new MySqlCommand("SELECT `online`, `max` FROM `online` LIMIT 1", conn))
                     {
                         using (var reader = cmd.ExecuteReader())
@@ -641,7 +676,6 @@ namespace ConquerWeb.Services
                 }
                 catch (MySqlException ex)
                 {
-                    // `online` tablosu yoksa veya baðlantý hatasý varsa logla
                     LogError($"Database Error getting online stats: {ex.Message}");
                 }
                 catch (Exception ex)
@@ -649,7 +683,7 @@ namespace ConquerWeb.Services
                     LogError($"Unexpected Error getting online stats: {ex.Message}");
                 }
             }
-            return null; // Veri bulunamazsa veya hata olursa null dön
+            return null;
         }
     }
 }

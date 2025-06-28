@@ -5,91 +5,64 @@
     Layout = "_Layout";
 }
 
-<section class="page-title">
-    <div class="overlay-bg"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 text-left">
-                <h1>Store</h1>
-            </div>
-            <div class="col-md-6 text-right">
-                <div aria-label="breadcrumb">
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/home">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Store</li>
-                    </ul>
+<header class="bg-dark py-5" style="background:url(/images/bg/rust.webp) no-repeat center top; background-size: 100%;">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Our Game Store</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">Discover exclusive in-game items and special packages to enhance your adventure!</p>
                 </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/store_icon.png" alt="Store Icon" style="max-width: 250px; height: auto;" />
             </div>
         </div>
     </div>
-</section>
+</header>
 
-<div class="container mt-4">
-    @if (ViewBag.ErrorMessage != null)
-    {
-        <div class="row justify-content-center">
-            <div class="col-lg-8 col-md-10">
-                <div class="login-box message-form mt-2">
-                    <h3>Error</h3>
-                    <div class="se-alert error text-capitalize"><i class="fas fa-info-circle" aria-hidden="true"></i> @ViewBag.ErrorMessage</div>
+<div class="py-5">
+    <div class="container px-5">
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-8">
+                    <div class="alert alert-danger text-center">
+                        <i class="fas fa-exclamation-triangle"></i> @ViewBag.ErrorMessage
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-    else
-    {
-        <div class="content1">
-            <div class="storeShop" style="display: block">
-                <div class="row3">
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var product in Model)
-                        {
-                            <div class="col-md-4 mb-4">
-                                <div class="blockHome2">
-                                    <div class="h2-title h2-title-table flex-s-c">
-                                        <span>@product.ProductName</span>
-                                    </div>
-                                    <div class="product_container text-center">
-                                        <center><div class="product_img"><img class="img-fluid" src="~/images/shop/@product.ProductImage"></div></center>
-                                        <br>
-                                        <div class="product_desc"><h3>@product.ProductDesc</h3></div>
-                                        <br>
-                                        <center><div class="product_price"><h2>@product.ProductPrice.ToString("F2") @product.ProductCurrency</h2></div></center>
-                                        <div class="all-button">
-                                            <form asp-controller="Store" asp-action="ProcessPayment" method="post">
-                                                <input type="hidden" name="productId" value="@product.ProductId" />
-                                                <button type="submit" class="bupton">Buy Paypal</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
+        }
+
+        <div class="row gx-5 justify-content-center">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var product in Model)
+                {
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100 shadow border-0">
+                            <div class="card-header text-center">
+                                <h4 class="my-0 fw-bold">@product.ProductName</h4>
                             </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="col-md-12 text-center">
-                            <p>No products available in the store.</p>
+                            <div class="card-body p-4 text-center">
+                                <img class="img-fluid mb-3 rounded" src="~/images/shop/@product.ProductImage" alt="@product.ProductName Image" style="max-height: 150px; object-fit: contain;">
+                                <p class="card-text text-muted">@product.ProductDesc</p>
+                                <h3 class="fw-bold my-3">@product.ProductPrice.ToString("F2") @product.ProductCurrency</h3>
+                                <form asp-controller="Store" asp-action="ProcessPayment" method="post">
+                                    <input type="hidden" name="productId" value="@product.ProductId" />
+                                    <button type="submit" class="btn btn-primary w-100">Buy Now!</button>
+                                </form>
+                            </div>
                         </div>
-                    }
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-lg-12 text-center">
+                    <p class="alert alert-info">No products available in the store at the moment.</p>
                 </div>
-            </div>
-        </div>
-    }
-</div>
-
-@if (ViewBag.ErrorMessage != null && ViewBag.ErrorMessage == "You must create a character before making a donation!")
-{
-    <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 col-md-10">
-                <div class="login-box message-form mt-2">
-                    <h3>Warning</h3>
-                    <div class="se-alert error text-capitalize"><i class="fas fa-info-circle" aria-hidden="true"></i> @ViewBag.ErrorMessage</div>
-                    <p class="text-center mt-3"><a href="/home" class="btn btn-secondary">Back to Home</a></p>
-                </div>
-            </div>
+            }
         </div>
     </div>
-}
+</div>

@@ -3,27 +3,34 @@
     Layout = "_Layout";
 }
 
-<section class="page-title">
-    <div class="overlay-bg"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1>Access Denied</h1>
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Access Denied</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">You do not have permission to view this page.</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/access_denied_icon.png" alt="Access Denied Icon" style="max-width: 250px; height: auto;" />
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow border-0">
+                    <div class="card-body p-4 text-center">
+                        <p class="alert alert-danger mb-4">You do not have the necessary permissions to access this page. Please log in or contact your administrator.</p>
+                        <a href="/Login" class="btn btn-primary me-2">Login</a>
+                        <a href="/home" class="btn btn-secondary">Home Page</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
-
-<div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="alert alert-danger text-center" role="alert">
-                You do not have permission to access this page. Please log in or contact your administrator.
-            </div>
-            <div class="text-center mt-4">
-                <a href="/Login" class="btn btn-primary">Login</a>
-                <a href="/home" class="btn btn-secondary">Home Page</a>
-            </div>
-        </div>
-    </div>
-</div>

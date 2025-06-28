@@ -1,109 +1,107 @@
 ﻿@model ConquerWeb.Models.ViewModels.UserProfileViewModel
 
 @{
-    ViewData["Title"] = "Profilim";
+    ViewData["Title"] = "Profile";
     Layout = "_Layout";
 }
 
-<section class="page-title">
-    <div class="overlay-bg"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1>Profilim</h1>
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">User Profile</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">View your account and character details.</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/profile_icon.png" alt="Profile Icon" style="max-width: 250px; height: auto;" />
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow border-0 mb-5">
+                    <div class="card-header text-center">
+                        <h4 class="my-0 fw-bold">Account Information</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        @if (Model.Account != null)
+                        {
+                            <p><strong>Username:</strong> @Model.Account.Username</p>
+                            <p><strong>Email:</strong> @Model.Account.Email</p>
+                            <p><strong>Registration Date:</strong> @Model.Account.Creation_Date.ToShortDateString()</p>
+                            <p><strong>Last Login:</strong> @(Model.Account.Last_Login.HasValue ? Model.Account.Last_Login.Value.ToString() : "Never Logged In")</p>
+                            <p><strong>Registration/Last Login IP:</strong> @Model.Account.IP</p>
+
+                            <hr class="my-4" />
+
+                            <h4 class="mb-3">Character Information</h4>
+                            @if (Model.Character != null)
+                            {
+                                <p><strong>Character Name:</strong> @Model.Character.Name</p>
+                                <p><strong>Profession:</strong> @Model.Character.JobName</p>
+                            }
+                            else
+                            {
+                                <p class="alert alert-warning">No character found linked to this account. Please ensure you have created a character in-game.</p>
+                            }
+                        }
+                        else
+                        {
+                            <p class="alert alert-danger">Error loading profile information or account not found.</p>
+                        }
+                    </div>
+                </div>
+
+                <div class="card shadow border-0">
+                    <div class="card-header text-center">
+                        <h4 class="my-0 fw-bold">Payment History</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        @if (Model.PaymentHistory != null && Model.PaymentHistory.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Item</th>
+                                            <th>Amount</th>
+                                            <th>DB Scrolls</th>
+                                            <th>VIP Days</th>
+                                            <th>Email</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var record in Model.PaymentHistory.OrderByDescending(p => p.PayDate))
+                                        {
+                                            <tr>
+                                                <td>@record.PayDate.ToShortDateString()</td>
+                                                <td>@(record.DBScrolls.HasValue ? record.DBScrolls + " DB Scrolls" : "N/A")</td>
+                                                <td>@record.Amount.ToString("F2") @record.Currency</td>
+                                                <td>@(record.DBScrolls.HasValue ? record.DBScrolls.Value : 0)</td>
+                                                <td>@(record.VIPDays.HasValue ? record.VIPDays.Value : 0)</td>
+                                                <td>@record.Email</td>
+                                                <td>@(string.IsNullOrEmpty(record.Paymentscol) ? "N/A" : record.Paymentscol)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-center alert alert-info">No payment records found for this account.</p>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
-
-<div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header text-center">
-                    <h3>Hesap Bilgileri</h3>
-                </div>
-                <div class="card-body">
-                    @if (Model.Account != null)
-                    {
-                        <p><strong>Kullanıcı Adı:</strong> @Model.Account.Username</p>
-                        <p><strong>Email:</strong> @Model.Account.Email</p>
-                        <p><strong>Hesap UID:</strong> @Model.Account.UID</p>
-                        <p><strong>Hesap Durumu:</strong> @Model.Account.Status</p>
-                        <p><strong>Kayıt Tarihi:</strong> @Model.Account.Creation_Date.ToShortDateString()</p>
-                        <p><strong>Son Giriş:</strong> @(Model.Account.Last_Login.HasValue ? Model.Account.Last_Login.Value.ToString() : "Hiç Giriş Yapılmadı")</p>
-                        <p><strong>Kayıt/Son Giriş IP:</strong> @Model.Account.IP</p>
-
-                        <hr />
-
-                        <h4>Karakter Bilgileri</h4>
-                        @if (Model.Character != null)
-                        {
-                            <p><strong>Karakter Adı:</strong> @Model.Character.Name</p>
-                            <p><strong>Karakter UID:</strong> @Model.Character.UID</p>
-                            <p><strong>Seviye:</strong> @Model.Character.Level</p>
-                            <p><strong>Meslek:</strong> @Model.Character.JobName</p> @* JobName özelliği ile meslek metin olarak gösteriliyor *@
-                            <p><strong>Deneyim:</strong> @Model.Character.Experience.ToString("N0")</p>
-                            @* <p><strong>Altın:</strong> @Model.Character.Gold.ToString("N0")</p> -- ALTIN SATIRI KALDIRILDI -- *@
-                            <p><strong>CPs:</strong> @Model.Character.CPs.ToString("N0")</p>
-                            <p><strong>DB Scrolls:</strong> @Model.Character.DBScrolls</p>
-                            <p><strong>VIP Seviyesi:</strong> @Model.Character.VIPLevel</p>
-                            <p><strong>PK Puanları:</strong> @Model.Character.PKPoints.ToString("N0")</p>
-                            <p><strong>Nobility:</strong> @Model.Character.Nobility</p> @* Nobility de metine çevrilebilir *@
-                            <p><strong>Lonca ID:</strong> @Model.Character.GuildID</p>
-                            <p><strong>Toplam Online Süre:</strong> @(Model.Character.OnlineTime / 60) saat @(Model.Character.OnlineTime % 60) dakika</p> @* Saniyeyi saate ve dakikaya çevirme *@
-                            <p><strong>Son Oyun Girişi:</strong> @(Model.Character.LastLogin.HasValue ? Model.Character.LastLogin.Value.ToString() : "Bilinmiyor")</p>
-                            
-                            @* Diğer tüm yeni eklenen alanları buraya ekleyebilirsiniz *@
-                            <hr />
-                            <h5>Diğer Detaylar</h5>
-                            <ul>
-                                <li><strong>Eş:</strong> @(string.IsNullOrEmpty(Model.Character.Spouse) ? "Yok" : Model.Character.Spouse)</li>
-                                <li><strong>Vücut/Yüz/Saç ID:</strong> @Model.Character.Body / @Model.Character.Face / @Model.Character.Hair</li>
-                                <li><strong>Envanter Gümüşü:</strong> @Model.Character.Silvers.ToString("N0")</li>
-                                <li><strong>Depo Gümüşü:</strong> @Model.Character.WHSilvers.ToString("N0")</li>
-                                <li><strong>Strength:</strong> @Model.Character.Strength</li>
-                                <li><strong>Agility:</strong> @Model.Character.Agility</li>
-                                <li><strong>Vitality:</strong> @Model.Character.Vitality</li>
-                                <li><strong>Spirit:</strong> @Model.Character.Spirit</li>
-                                <li><strong>Extra Stats:</strong> @Model.Character.ExtraStats</li>
-                                <li><strong>HP/MP:</strong> @Model.Character.Life / @Model.Character.Mana</li>
-                                <li><strong>Virtue Points:</strong> @Model.Character.VirtuePoints</li>
-                                <li><strong>VIP Level/Days (To Receive):</strong> @Model.Character.VIPLevelToReceive / @Model.Character.VIPDaysToReceive</li>
-                                <li><strong>Double Exp:</strong> @Model.Character.DoubleExp</li>
-                                <li><strong>VIP Süresi:</strong> @Model.Character.VIP</li>
-                                <li><strong>Pumpkin/Treasure/CTB Points:</strong> @Model.Character.PumpkinPoints / @Model.Character.TreasurePoints / @Model.Character.CTBPoints</li>
-                                <li><strong>Met Scrolls:</strong> @Model.Character.MetScrolls</li>
-                                <li><strong>Dragon/Phoenix Gems:</strong> @Model.Character.DragonGems / @Model.Character.PhoenixGems</li>
-                                <li><strong>Rainbow/Kylin Gems:</strong> @Model.Character.RainbowGems / @Model.Character.KylinGems</li>
-                                <li><strong>Fury/Violet Gems:</strong> @Model.Character.FuryGems / @Model.Character.VioletGems</li>
-                                <li><strong>Moon/Tortoise Gems:</strong> @Model.Character.MoonGems / @Model.Character.TortoiseGems</li>
-                                <li><strong>Dragonballs:</strong> @Model.Character.Dragonballs</li>
-                                <li><strong>Paradises:</strong> @Model.Character.Paradises</li>
-                                <li><strong>Garment Token:</strong> @Model.Character.GarmentToken</li>
-                                <li><strong>Toplam Öldürme:</strong> @Model.Character.CurrentKills</li>
-                                <li><strong>Nobility:</strong> @Model.Character.Nobility</li>
-                                <li><strong>Vote/Classic Points:</strong> @Model.Character.VotePoints / @Model.Character.ClassicPoints</li>
-                                <li><strong>Passive Skills:</strong> @Model.Character.PassiveSkills</li>
-                                <li><strong>Heavens Blessing:</strong> @Model.Character.HeavensBlessing</li>
-                                <li><strong>Bot Jailed Time:</strong> @Model.Character.BotjailedTime</li>
-                                <li><strong>Muted Record/Time:</strong> @Model.Character.MutedRecord / @Model.Character.MutedTime</li>
-                                <li><strong>Current/Total Honor:</strong> @Model.Character.CurrentHonor / @Model.Character.TotalHonor</li>
-                                <li><strong>Total Wins/Losses:</strong> @Model.Character.TotalWins / @Model.Character.TotalLosses</li>
-                            </ul>
-
-                        }
-                        else
-                        {
-                            <p class="alert alert-warning">Henüz bu hesaba bağlı bir karakter bulunamadı. Lütfen oyunda bir karakter oluşturduğunuzdan emin olun.</p>
-                        }
-                    }
-                    else
-                    {
-                        <p class="alert alert-danger">Profil bilgileri yüklenirken bir hata oluştu veya hesabınız bulunamadı.</p>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

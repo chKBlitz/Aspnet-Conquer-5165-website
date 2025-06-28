@@ -1,71 +1,94 @@
 ﻿@model ConquerWeb.Models.ViewModels.LoginViewModel
 
 @{
-    ViewData["Title"] = "Giriş Yap";
+    ViewData["Title"] = "Login";
     Layout = "_Layout";
 }
 
-<section class="page-title">
-    <div class="overlay-bg"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1>Giriş Yap</h1>
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Login to Your Account</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">Access your profile and manage your game account.</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/login_icon.png" alt="Login Icon" style="max-width: 250px; height: auto;" />
             </div>
         </div>
     </div>
-</section>
+</header>
 
-<div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header text-center">
-                    <h3>Hesabınıza Giriş Yapın</h3>
-                </div>
-                <div class="card-body">
-                    <form asp-controller="Account" asp-action="Login" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                        @if (ViewBag.SuccessMessage != null)
-                        {
-                            <div class="alert alert-success text-center" role="alert">
-                                @ViewBag.SuccessMessage
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow border-0">
+                    <div class="card-header text-center">
+                        <h4 class="my-0 fw-bold">Login</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form asp-controller="Account" asp-action="Login" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            @if (ViewBag.SuccessMessage != null)
+                            {
+                                <div class="alert alert-success text-center" role="alert">
+                                    @ViewBag.SuccessMessage
+                                </div>
+                            }
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Username" class="form-control" placeholder="Username" />
+                                <label asp-for="Username">Username</label>
+                                <span asp-validation-for="Username" class="text-danger"></span>
                             </div>
-                        }
 
-                        <div class="form-group mb-3">
-                            <label asp-for="Username" class="form-label"></label>
-                            <input asp-for="Username" class="form-control" />
-                            <span asp-validation-for="Username" class="text-danger"></span>
-                        </div>
+                            <div class="form-floating mb-3">
+                                <input asp-for="Password" class="form-control" placeholder="Password" />
+                                <label asp-for="Password">Password</label>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
 
-                        <div class="form-group mb-3">
-                            <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
+                            <div class="form-check mb-4">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label">Remember Me</label>
+                            </div>
 
-                        <div class="form-group form-check mb-4">
-                            <input asp-for="RememberMe" type="checkbox" class="form-check-input" />
-                            <label asp-for="RememberMe" class="form-check-label"></label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                            </div>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p><a href="/Account/ForgotPassword">Forgot Password?</a></p>
+                            <p>Don't have an account? <a href="/Register">Register</a></p>
                         </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Giriş Yap</button>
-                        </div>
-                    </form>
-                    <div class="text-center mt-3">
-                        <p><a href="/Account/ForgotPassword">Şifremi unuttum</a></p>
-                        <p>Hesabınız yok mu? <a href="/Register">Kayıt Ol</a></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Success mesajı varsa SweetAlert2 ile göster
+            var successMessage = '@TempData["SweetAlertSuccess"]';
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: successMessage,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+        });
+    </script>
 }

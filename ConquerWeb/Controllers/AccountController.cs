@@ -61,6 +61,7 @@ namespace ConquerWeb.Controllers
                     {
                         await SignInUser(userAccount, false);
                         _dbHelper.UpdateLastLogin(userAccount.UID, userIpAddress);
+                        TempData["SweetAlertRegisterSuccess"] = "Registration complete! Welcome!"; // BENZERSİZ ANAHTAR
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -93,6 +94,9 @@ namespace ConquerWeb.Controllers
                     string userIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
                     await SignInUser(account, model.RememberMe);
                     _dbHelper.UpdateLastLogin(account.UID, userIpAddress);
+                    HttpContext.Session.SetInt32("DragonCoin", 0);
+
+                    TempData["SweetAlertLoginSuccess"] = "Login successful! Welcome to your account!"; // BENZERSİZ ANAHTAR
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -107,6 +111,7 @@ namespace ConquerWeb.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
+            TempData["SweetAlertLogoutSuccess"] = "Logout successful!"; // BENZERSİZ ANAHTAR
             return RedirectToAction("Login", "Account");
         }
 
@@ -168,7 +173,7 @@ namespace ConquerWeb.Controllers
 
                 _dbHelper.UpdatePassword(userId, _securityHelper.HashPassword(model.NewPassword));
 
-                ViewBag.SuccessMessage = "Your password has been changed successfully.";
+                TempData["SweetAlertChangePasswordSuccess"] = "Password change successful!"; // BENZERSİZ ANAHTAR
                 ModelState.Clear();
                 return View();
             }
@@ -199,13 +204,16 @@ namespace ConquerWeb.Controllers
                     string resetLink = Url.Action("ResetPassword", "Account", new { token = token, email = model.Email }, Request.Scheme);
                     _dbHelper.LogError($"Password reset token generated: Email: {account.Email}, Token: {token}, Link: {resetLink}");
 
-                    ViewBag.Message = "A password reset link has been sent to your email address.";
+                    TempData["SweetAlertForgotPasswordSuccess"] = "Password reset link sent to your email!"; // BENZERSİZ ANAHTAR
                     ModelState.Clear();
+                    // Yönlendirmeyi yaparken TempData'nın korunması için RedirectToAction'a geçmeden önce ayarlıyoruz.
+                    return RedirectToAction("Login", "Account"); // Yönlendirme sonrası mesajı görmek için
                 }
                 else
                 {
-                    ViewBag.Message = "A password reset link has been sent to your email address.";
+                    TempData["SweetAlertForgotPasswordSuccess"] = "If an account exists, a password reset link has been sent to your email!"; // Güvenlik mesajı
                     ModelState.Clear();
+                    return RedirectToAction("Login", "Account"); // Yönlendirme sonrası mesajı görmek için
                 }
             }
             return View(model);
@@ -254,7 +262,7 @@ namespace ConquerWeb.Controllers
                     await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 }
 
-                ViewBag.SuccessMessage = "Your password has been reset successfully. Please log in with your new password.";
+                TempData["SweetAlertResetPasswordSuccess"] = "Your password has been reset successfully. Please log in with your new password."; // BENZERSİZ ANAHTAR
                 ModelState.Clear();
                 return RedirectToAction("Login", "Account");
             }
@@ -287,10 +295,18 @@ namespace ConquerWeb.Controllers
 
             var character = _dbHelper.GetCharacterByUserId(userId);
 
+            List<PaymentRecord> paymentHistory = new List<PaymentRecord>();
+            if (character != null)
+            {
+                paymentHistory = _dbHelper.GetPaymentRecordsByUsername(character.Name);
+            }
+
+
             var viewModel = new UserProfileViewModel
             {
                 Account = account,
-                Character = character
+                Character = character,
+                PaymentHistory = paymentHistory
             };
 
             return View(viewModel);

@@ -5,29 +5,36 @@
     Layout = "_Layout";
 }
 
-<section class="page-title">
-    <div class="overlay-bg"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1>@Model.Title</h1>
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">@Model.Title</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">By @Model.Author on @Model.Publish_Date.ToShortDateString()</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/news_details_icon.png" alt="News Details Icon" style="max-width: 250px; height: auto;" />
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow border-0 mb-5">
+                    <div class="card-body p-4">
+                        <div class="small text-muted mb-3">Published on @Model.Publish_Date.ToShortDateString() by @Model.Author</div>
+                        <div class="fs-5 mb-4">
+                            <p class="lead">@Model.Content</p>
+                        </div>
+                        <a asp-controller="News" asp-action="Index" class="btn btn-primary mt-3">Back to All News</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
-
-<div class="container mt-5 mb-5">
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <h4 class="my-0 font-weight-normal">@Model.Title</h4>
-        </div>
-        <div class="card-body">
-            <h6 class="card-subtitle mb-3 text-muted">Publish Date: @Model.Publish_Date.ToShortDateString() - Author: @Model.Author</h6>
-            <div class="news-content">
-                <p>@Model.Content</p>
-            </div>
-            <hr />
-            <a asp-controller="News" asp-action="Index" class="btn btn-secondary">Back to All News</a>
-        </div>
-    </div>
-</div>

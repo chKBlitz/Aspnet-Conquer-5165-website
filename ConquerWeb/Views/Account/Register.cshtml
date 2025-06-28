@@ -1,108 +1,158 @@
 ﻿@model ConquerWeb.Models.ViewModels.RegisterViewModel
 
 @{
-    ViewData["Title"] = "Kayıt Ol";
+    ViewData["Title"] = "Register";
     Layout = "_Layout";
 }
 
-<section class="page-title">
-    <div class="overlay-bg"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1>Kayıt Ol</h1>
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Register New Account</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">Join our community and start your adventure!</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/register_icon.png" alt="Register Icon" style="max-width: 250px; height: auto;" />
             </div>
         </div>
     </div>
-</section>
+</header>
 
-<div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header text-center">
-                    <h3>Yeni Hesap Oluştur</h3>
-                </div>
-                <div class="card-body">
-                    <form asp-controller="Account" asp-action="Register" method="post">
-                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow border-0">
+                    <div class="card-header text-center">
+                        <h4 class="my-0 fw-bold">Create Your Account</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form asp-controller="Account" asp-action="Register" method="post" id="registerForm">
+                            <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-                        <div class="form-group mb-3">
-                            <label asp-for="Username" class="form-label"></label>
-                            <input asp-for="Username" class="form-control" id="usernameInput" /> @* id eklendi *@
-                            <span asp-validation-for="Username" class="text-danger"></span>
-                            <span id="usernameAvailability" class="text-info mt-1 d-block"></span> @* Kullanılabilirlik mesajı için span *@
+                            <div class="form-floating mb-3">
+                                <input asp-for="Username" class="form-control" id="usernameInput" placeholder="Username" />
+                                <label asp-for="Username">Username</label>
+                                <span asp-validation-for="Username" class="text-danger"></span>
+                                <div class="invalid-feedback" id="usernameInvalidFeedback"></div>
+                                <div class="valid-feedback" id="usernameValidFeedback"></div>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Email" class="form-control" placeholder="Email Address" />
+                                <label asp-for="Email">Email Address</label>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Password" class="form-control" placeholder="Password" />
+                                <label asp-for="Password">Password</label>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password" />
+                                <label asp-for="ConfirmPassword">Confirm Password</label>
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg" id="registerButton">Register</button>
+                            </div>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p>Already have an account? <a href="/Login">Login</a></p>
                         </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" class="form-control" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label asp-for="ConfirmPassword" class="form-label"></label>
-                            <input asp-for="ConfirmPassword" class="form-control" />
-                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Kayıt Ol</button>
-                        </div>
-                    </form>
-                    <div class="text-center mt-3">
-                        <p>Zaten bir hesabınız var mı? <a href="/Login">Giriş Yap</a></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script type="text/javascript">
-        // Kullanıcı adı alanından çıkıldığında AJAX ile kontrol
-        $(document).ready(function () {
-            $('#usernameInput').on('blur', function () { // 'blur' alanı terk edildiğinde tetiklenir
-                var username = $(this).val();
-                var availabilitySpan = $('#usernameAvailability');
 
-                // Kullanıcı adı boş veya çok kısaysa AJAX isteği gönderme
-                if (username.length < 4) {
-                    availabilitySpan.html(''); // Mesajı temizle
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // SweetAlert2 pop-up için başarılı mesaj kontrolü
+            var successMessage = '@TempData["SweetAlertSuccess"]';
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: successMessage,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+
+            var usernameInput = $('#usernameInput');
+            var usernameInvalidFeedback = $('#usernameInvalidFeedback');
+            var usernameValidFeedback = $('#usernameValidFeedback');
+            var registerButton = $('#registerButton');
+
+            function setValidationState(element, isValid, message) {
+                element.removeClass('is-valid is-invalid');
+                usernameInvalidFeedback.hide().html('');
+                usernameValidFeedback.hide().html('');
+
+                if (isValid === true) {
+                    element.addClass('is-valid');
+                    usernameValidFeedback.html(message).show();
+                } else if (isValid === false) {
+                    element.addClass('is-invalid');
+                    usernameInvalidFeedback.html(message).show();
+                }
+            }
+
+            registerButton.prop('disabled', true);
+
+            usernameInput.on('keyup blur', function () {
+                var username = $(this).val();
+
+                if (username.length < 4 || username.length > 50 || !/^[a-zA-Z0-9]*$/.test(username)) {
+                    setValidationState(usernameInput, false, 'Username must be between 4-50 characters and contain only letters/numbers.');
+                    registerButton.prop('disabled', true);
                     return;
                 }
 
-                availabilitySpan.html('Kontrol ediliyor...');
-                availabilitySpan.removeClass('text-success text-danger').addClass('text-info'); // Mesaj rengini ayarla
+                if (username.trim() !== '') {
+                    setValidationState(usernameInput, null, '');
+                    usernameInvalidFeedback.html('Checking availability...').show().css('color', '#6c757d');
 
-                $.ajax({
-                    url: '@Url.Action("IsUsernameAvailable", "Account")', // AccountController içindeki IsUsernameAvailable action'ı
-                    type: 'GET',
-                    data: { username: username },
-                    success: function (isAvailable) {
-                        if (isAvailable) {
-                            availabilitySpan.html('Kullanıcı adı kullanılabilir.');
-                            availabilitySpan.removeClass('text-info text-danger').addClass('text-success');
-                        } else {
-                            availabilitySpan.html('Bu kullanıcı adı zaten kullanılıyor.');
-                            availabilitySpan.removeClass('text-info text-success').addClass('text-danger');
+                    $.ajax({
+                        url: '@Url.Action("IsUsernameAvailable", "Account")',
+                        type: 'GET',
+                        data: { username: username },
+                        success: function (isAvailable) {
+                            if (isAvailable) {
+                                setValidationState(usernameInput, true, 'Username is available.');
+                                registerButton.prop('disabled', false);
+                            } else {
+                                setValidationState(usernameInput, false, 'This username is already in use.');
+                                registerButton.prop('disabled', true);
+                            }
+                        },
+                        error: function () {
+                            setValidationState(usernameInput, false, 'An error occurred while checking username availability.');
+                            registerButton.prop('disabled', true);
                         }
-                    },
-                    error: function () {
-                        availabilitySpan.html('Kullanıcı adı kontrol edilirken bir hata oluştu.');
-                        availabilitySpan.removeClass('text-info text-success').addClass('text-danger');
-                    }
-                });
+                    });
+                } else {
+                    setValidationState(usernameInput, null, '');
+                    registerButton.prop('disabled', true);
+                }
+            });
+
+            $('#registerForm').submit(function (event) {
+                if (usernameInput.hasClass('is-invalid') || registerButton.prop('disabled')) {
+                    event.preventDefault();
+                }
             });
         });
     </script>

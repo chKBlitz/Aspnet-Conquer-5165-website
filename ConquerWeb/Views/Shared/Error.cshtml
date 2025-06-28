@@ -1,14 +1,47 @@
-﻿@{
+﻿@model ConquerWeb.Models.ErrorViewModel
+
+@{
     ViewData["Title"] = "Error";
     Layout = "_Layout";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Error!</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">An unexpected error occurred while processing your request.</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/error_icon.png" alt="Error Icon" style="max-width: 250px; height: auto;" />
+            </div>
+        </div>
+    </div>
+</header>
 
-@if (ViewBag.ErrorMessage != null)
-{
-    <p class="alert alert-danger">
-        <strong>Error Message:</strong> <code>@ViewBag.ErrorMessage</code>
-    </p>
-}
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow border-0">
+                    <div class="card-body p-4 text-center">
+                        <h2 class="text-danger mb-3">Something went wrong.</h2>
+                        @if (Model != null && !string.IsNullOrEmpty(Model.RequestId))
+                        {
+                            <p class="text-white-50"><strong>Request ID:</strong> <code>@Model.RequestId</code></p>
+                        }
+                        @if (ViewBag.ErrorMessage != null)
+                        {
+                            <p class="alert alert-danger">
+                                <strong>Error Message:</strong> <code>@ViewBag.ErrorMessage</code>
+                            </p>
+                        }
+                        <p class="mt-4"><a href="/home" class="btn btn-primary">Back to Home</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

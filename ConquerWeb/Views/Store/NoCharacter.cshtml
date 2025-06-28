@@ -3,26 +3,34 @@
     Layout = "_Layout";
 }
 
-<section class="page-title">
-    <div class="overlay-bg"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1>Character Not Found</h1>
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Character Not Found</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">You need an in-game character to access this section.</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/no_character_icon.png" alt="No Character Icon" style="max-width: 250px; height: auto;" />
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow border-0">
+                    <div class="card-body p-4 text-center">
+                        <p class="alert alert-warning mb-4">You must create a character before you can proceed with this action.</p>
+                        <p class="mb-0">Please log in to the game and ensure you have created a character.</p>
+                        <a href="/home" class="btn btn-primary mt-3">Back to Home</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
-
-<div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            <div class="login-box message-form mt-2">
-                <h3>Warning</h3>
-                <div class="se-alert error text-capitalize"><i class="fas fa-info-circle" aria-hidden="true"></i> @ViewBag.ErrorMessage</div>
-                <p class="text-center mt-3">Please log in to the game and make sure you have created a character.</p>
-                <p class="text-center"><a href="/home" class="btn btn-primary">Back to Home</a></p>
-            </div>
-        </div>
-    </div>
-</div>

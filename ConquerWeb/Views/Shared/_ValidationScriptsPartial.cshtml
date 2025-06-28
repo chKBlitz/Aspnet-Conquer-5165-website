@@ -1,3 +1,12 @@
-﻿<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<script type="text/javascript">
+    // Bu script sadece _ValidationScriptsPartial'ın yüklendiğini doğrulamak içindir.
+    // Konsolda "jQuery is defined" mesajını görmelisin, çünkü jQuery _Layout'ta yükleniyor.
+    if (typeof jQuery != 'undefined') {
+        console.log("jQuery is defined in _ValidationScriptsPartial.cshtml");
+    } else {
+        console.warn("jQuery is NOT defined in _ValidationScriptsPartial.cshtml - Check _Layout.cshtml for jQuery load order.");
+    }
+</script>

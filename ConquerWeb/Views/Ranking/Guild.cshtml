@@ -5,52 +5,39 @@
     Layout = "_Layout";
 }
 
-<section class="page-title">
-    <div class="overlay-bg"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 text-left">
-                <h1>Guild Rankings</h1>
-            </div>
-            <div class="col-md-6 text-right">
-                <div aria-label="breadcrumb">
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/home">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/Ranking">Rankings</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Guild</li>
-                    </ul>
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Guild Rankings</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">Discover the most powerful and influential guilds on the server.</p>
                 </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/ranking_guild_icon.png" alt="Guild Rankings Icon" style="max-width: 250px; height: auto;" />
             </div>
         </div>
     </div>
-</section>
+</header>
 
-<main class="content">
-    <div class="block-top-page news-news">
-        <div class="block-title-news">
-            <h1>@ViewData["Title"]</h1>
+<section class="py-5">
+    <div class="container px-5">
+        <div class="fast-button gx-5 mb-4 justify-content-center">
+            <div class="col-auto">
+                <a class="btn btn-secondary btn-lg" href="/Ranking">Player Ranking</a>
+            </div>
+            <div class="col-auto">
+                <a class="btn btn-primary btn-lg" href="/Ranking/Guild">Guild Ranking</a>
+            </div>
         </div>
 
-        <div class="content-news">
-            <div class="fast-button flex-s-c">
-                <div class="download-block fast-link">
-                    <a href="/Ranking"><span>Player</span><br><p>Ranking</p></a>
-                </div>
-                <div class="registration-block fast-link">
-                    <a href="/Ranking/Guild"><span>Guild</span><br><p>Ranking</p></a>
-                </div>
-            </div>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-
-            <table class="nice_table" border="0" cellspacing="5" cellpadding="1">
+        <h2 class="fw-bolder fs-5 mb-4">Top 10 Guilds by Members</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover nice_table">
                 <thead>
                     <tr>
-                        <td width="4%" align="center"></td>
+                        <td width="4%" class="text-center">#</td>
                         <td width="4%">Name</td>
                         <td width="4%">Leader</td>
                         <td width="4%">Leader ID</td>
@@ -68,15 +55,15 @@
                         foreach (var guild in Model)
                         {
                             <tr>
-                                <td class="center">@(rank++)°</td>
+                                <td class="text-center">@(rank++)°</td>
                                 <td class="orange">@guild.Name</td>
-                                <td class="center">@guild.LeaderName</td>
-                                <td class="center">@guild.LeaderID</td>
-                                <td class="center">@guild.Fund.ToString("N0")</td>
-                                <td class="center">@guild.Wins</td>
-                                <td class="center">@guild.Members</td>
-                                <td class="center">@(string.IsNullOrEmpty(guild.Bulletin) ? "None" : (guild.Bulletin.Length > 50 ? guild.Bulletin.Substring(0, 50) + "..." : guild.Bulletin))</td>
-                                <td class="center">@(string.IsNullOrEmpty(guild.LastWinner) ? "None" : guild.LastWinner)</td>
+                                <td class="text-center">@guild.LeaderName</td>
+                                <td class="text-center">@guild.LeaderID</td>
+                                <td class="text-center">@guild.Fund.ToString("N0")</td>
+                                <td class="text-center">@guild.Wins</td>
+                                <td class="text-center">@guild.Members</td>
+                                <td class="text-center">@(string.IsNullOrEmpty(guild.Bulletin) ? "None" : (guild.Bulletin.Length > 50 ? guild.Bulletin.Substring(0, 50) + "..." : guild.Bulletin))</td>
+                                <td class="text-center">@(string.IsNullOrEmpty(guild.LastWinner) ? "None" : guild.LastWinner)</td>
                             </tr>
                         }
                     }
@@ -90,7 +77,4 @@
             </table>
         </div>
     </div>
-    <div class="toTop-fon">
-        <div class="toTop" id="toTop"></div>
-    </div>
-</main>
+</section>

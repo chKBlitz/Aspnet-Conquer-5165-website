@@ -5,72 +5,107 @@
     Layout = "_Layout";
 }
 
-<section class="page-title">
-    <div class="overlay-bg"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 text-left">
-                <h1>Downloads</h1>
-            </div>
-            <div class="col-md-6 text-right">
-                <div aria-label="breadcrumb">
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/home">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Downloads</li>
-                    </ul>
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Download Game & Tools</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">Find the latest game client, patches, and essential tools here.</p>
                 </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/download_icon.png" alt="Download Icon" style="max-width: 250px; height: auto;" />
             </div>
         </div>
     </div>
-</section>
+</header>
 
-<div class="container mt-5 mb-5">
-    <h2>Game Files & Tools</h2>
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>File Name</th>
-                    <th>Size (MB)</th>
-                    <th>Publish Date</th>
-                    <th>Category</th>
-                    <th>Download</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var item in Model)
+<div class="py-5">
+    <div class="container px-5">
+        <h2 class="fw-bolder fs-5 mb-4">Available Files</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>File Name</th>
+                        <th>Size (MB)</th>
+                        <th>Publish Date</th>
+                        <th>Category</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Title</td>
+                                <td>@item.Description</td>
+                                <td>@item.File_Name</td>
+                                <td>@item.File_Size_MB.ToString("N2")</td>
+                                <td>@item.Publish_Date.ToShortDateString()</td>
+                                <td>@item.Category</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Download_Url))
+                                    {
+                                        <a href="@item.Download_Url" class="btn btn-sm btn-primary" target="_blank">Download</a>
+                                    }
+                                    else
+                                    {
+                                        <span>No Link</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td>@item.Title</td>
-                            <td>@item.Description</td>
-                            <td>@item.File_Name</td>
-                            <td>@item.File_Size_MB.ToString("N2")</td>
-                            <td>@item.Publish_Date.ToShortDateString()</td>
-                            <td>@item.Category</td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(item.Download_Url))
-                                {
-                                    <a href="@item.Download_Url" class="btn btn-sm btn-success" target="_blank">Download</a>
-                                }
-                                else
-                                {
-                                    <span>No Link</span>
-                                }
-                            </td>
+                            <td colspan="7" class="text-center">No downloadable files found.</td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="7" class="text-center">No downloadable files found.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="card shadow border-0">
+                    <div class="card-header text-center">
+                        <h4 class="my-0 fw-bold">System Requirements</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Recommended Configuration</h5>
+                                <ul class="list-unstyled">
+                                    <li>Operating system: Windows 10.</li>
+                                    <li>Processor: Intel Core i5 processor or higher.</li>
+                                    <li>Memory: 4GB RAM.</li>
+                                    <li>Graphics: DirectX 9.0c compatible card (Gtx 750).</li>
+                                    <li>DirectX: 9.</li>
+                                    <li>Hard disk: 40GB HD space.</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Minimum System Requirements</h5>
+                                <ul class="list-unstyled">
+                                    <li>Operating system: Windows XP/Windows 7/Windows 8/Windows 10.</li>
+                                    <li>Processor: 2 GHz Intel dual-core processor.</li>
+                                    <li>Memory: 1GB RAM.</li>
+                                    <li>Graphics: DirectX 8.0c compatible card (Geforce 6600).</li>
+                                    <li>DirectX: 8.</li>
+                                    <li>Hard disk: 20GB HD space.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
