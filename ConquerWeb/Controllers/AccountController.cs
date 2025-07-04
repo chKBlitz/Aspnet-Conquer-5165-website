@@ -61,7 +61,7 @@ namespace ConquerWeb.Controllers
                     {
                         await SignInUser(userAccount, false);
                         _dbHelper.UpdateLastLogin(userAccount.UID, userIpAddress);
-                        TempData["SweetAlertRegisterSuccess"] = "Registration complete! Welcome!"; // BENZERSİZ ANAHTAR
+                        TempData["SweetAlertRegisterSuccess"] = "Registration complete! Welcome!";
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -96,7 +96,7 @@ namespace ConquerWeb.Controllers
                     _dbHelper.UpdateLastLogin(account.UID, userIpAddress);
                     HttpContext.Session.SetInt32("DragonCoin", 0);
 
-                    TempData["SweetAlertLoginSuccess"] = "Login successful! Welcome to your account!"; // BENZERSİZ ANAHTAR
+                    TempData["SweetAlertLoginSuccess"] = "Login successful! Welcome to your account!";
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -111,10 +111,11 @@ namespace ConquerWeb.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
-            TempData["SweetAlertLogoutSuccess"] = "Logout successful!"; // BENZERSİZ ANAHTAR
+            TempData["SweetAlertLogoutSuccess"] = "Logout successful!";
             return RedirectToAction("Login", "Account");
         }
 
+        // SignInUser metoduna rol talebi eklendi
         private async Task SignInUser(Account account, bool isPersistent)
         {
             var claims = new List<Claim>
@@ -123,6 +124,16 @@ namespace ConquerWeb.Controllers
                 new Claim(ClaimTypes.Name, account.Username),
                 new Claim(ClaimTypes.Email, account.Email)
             };
+
+            // Kullanıcının Status değerine göre rol talebi ekle
+            if (account.Status == 3) // Status 3 ise Admin olarak kabul et (DEĞİŞTİRİLDİ)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            }
+            else
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "User")); // Varsayılan kullanıcı rolü
+            }
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -173,7 +184,7 @@ namespace ConquerWeb.Controllers
 
                 _dbHelper.UpdatePassword(userId, _securityHelper.HashPassword(model.NewPassword));
 
-                TempData["SweetAlertChangePasswordSuccess"] = "Password change successful!"; // BENZERSİZ ANAHTAR
+                TempData["SweetAlertChangePasswordSuccess"] = "Password change successful!";
                 ModelState.Clear();
                 return View();
             }
@@ -204,16 +215,13 @@ namespace ConquerWeb.Controllers
                     string resetLink = Url.Action("ResetPassword", "Account", new { token = token, email = model.Email }, Request.Scheme);
                     _dbHelper.LogError($"Password reset token generated: Email: {account.Email}, Token: {token}, Link: {resetLink}");
 
-                    TempData["SweetAlertForgotPasswordSuccess"] = "Password reset link sent to your email!"; // BENZERSİZ ANAHTAR
-                    ModelState.Clear();
-                    // Yönlendirmeyi yaparken TempData'nın korunması için RedirectToAction'a geçmeden önce ayarlıyoruz.
-                    return RedirectToAction("Login", "Account"); // Yönlendirme sonrası mesajı görmek için
+                    TempData["SweetAlertForgotPasswordSuccess"] = "Password reset link sent to your email!";
+                    return RedirectToAction("Login", "Account");
                 }
                 else
                 {
-                    TempData["SweetAlertForgotPasswordSuccess"] = "If an account exists, a password reset link has been sent to your email!"; // Güvenlik mesajı
-                    ModelState.Clear();
-                    return RedirectToAction("Login", "Account"); // Yönlendirme sonrası mesajı görmek için
+                    TempData["SweetAlertForgotPasswordSuccess"] = "If an account exists, a password reset link has been sent to your email!";
+                    return RedirectToAction("Login", "Account");
                 }
             }
             return View(model);
@@ -262,8 +270,7 @@ namespace ConquerWeb.Controllers
                     await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 }
 
-                TempData["SweetAlertResetPasswordSuccess"] = "Your password has been reset successfully. Please log in with your new password."; // BENZERSİZ ANAHTAR
-                ModelState.Clear();
+                TempData["SweetAlertResetPasswordSuccess"] = "Your password has been reset successfully. Please log in with your new password.";
                 return RedirectToAction("Login", "Account");
             }
             return View(model);

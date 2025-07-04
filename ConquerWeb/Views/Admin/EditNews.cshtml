@@ -1,0 +1,96 @@
+﻿@model ConquerWeb.Models.ViewModels.EditNewsViewModel
+
+@{
+    ViewData["Title"] = "Edit News";
+    Layout = "_Layout";
+}
+
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Edit News: @Model.Title</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">Modify an existing news article.</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/edit_news_icon.png" alt="Edit News Icon" style="max-width: 250px; height: auto;" /> @* Resim yolu güncellenebilir *@
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow border-0">
+                    <div class="card-header text-center">
+                        <h4 class="my-0 fw-bold">Edit News Article Details</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form asp-controller="Admin" asp-action="EditNews" method="post">
+                            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                            <input type="hidden" asp-for="Id" />
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Title" class="form-control" placeholder="News Title" />
+                                <label asp-for="Title"></label>
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <textarea asp-for="Content" class="form-control" placeholder="News Content" style="height: 150px;"></textarea>
+                                <label asp-for="Content"></label>
+                                <span asp-validation-for="Content" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="Author" class="form-control" placeholder="Author" />
+                                <label asp-for="Author"></label>
+                                <span asp-validation-for="Author" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <input asp-for="Publish_Date" class="form-control" type="datetime-local" />
+                                <label asp-for="Publish_Date"></label>
+                                <span asp-validation-for="Publish_Date" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a asp-controller="Admin" asp-action="News" class="btn btn-secondary btn-lg me-md-2">Cancel</a>
+                                <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // SweetAlert mesajları
+            ['SweetAlertSuccess', 'SweetAlertError', 'SweetAlertWarning'].forEach(function(key) {
+                if (sessionStorage.getItem(key)) {
+                    let iconType = key.replace('SweetAlert', '').toLowerCase();
+                    Swal.fire({
+                        icon: iconType,
+                        title: iconType.charAt(0).toUpperCase() + iconType.slice(1) + '!',
+                        text: sessionStorage.getItem(key),
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    sessionStorage.removeItem(key);
+                }
+            });
+        });
+    </script>
+}

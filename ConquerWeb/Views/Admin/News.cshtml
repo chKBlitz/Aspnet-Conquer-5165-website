@@ -1,0 +1,101 @@
+﻿@using ConquerWeb.Models
+@model List<News>
+
+@{
+    ViewData["Title"] = "Manage News";
+    Layout = "_Layout";
+}
+
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Manage News</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">Create, edit, and delete news articles for your website.</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/news_icon.png" alt="News Icon" style="max-width: 250px; height: auto;" /> @* Resim yolu güncellenebilir *@
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow border-0">
+                    <div class="card-header text-center">
+                        <h4 class="my-0 fw-bold">All News Articles</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3 text-end">
+                            <a asp-controller="Admin" asp-action="AddNews" class="btn btn-success">Add New News</a>
+                        </div>
+                        @if (Model != null && Model.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>Author</th>
+                                            <th>Publish Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var newsItem in Model.OrderByDescending(n => n.Publish_Date))
+                                        {
+                                            <tr>
+                                                <td>@newsItem.Id</td>
+                                                <td>@newsItem.Title</td>
+                                                <td>@newsItem.Author</td>
+                                                <td>@newsItem.Publish_Date.ToString("yyyy-MM-dd HH:mm")</td>
+                                                <td>
+                                                    <a asp-controller="Admin" asp-action="EditNews" asp-route-id="@newsItem.Id" class="btn btn-sm btn-primary">Edit</a>
+                                                    <form asp-controller="Admin" asp-action="DeleteNews" method="post" style="display:inline;" onsubmit="return confirm('Bu haberi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!');">
+                                                        <input type="hidden" name="id" value="@newsItem.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-center alert alert-info">No news articles found.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // SweetAlert mesajları için JavaScript kodu
+            ['SweetAlertSuccess', 'SweetAlertError', 'SweetAlertWarning'].forEach(function(key) {
+                if (sessionStorage.getItem(key)) {
+                    let iconType = key.replace('SweetAlert', '').toLowerCase();
+                    Swal.fire({
+                        icon: iconType,
+                        title: iconType.charAt(0).toUpperCase() + iconType.slice(1) + '!',
+                        text: sessionStorage.getItem(key),
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    sessionStorage.removeItem(key);
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,94 @@
+﻿@model ConquerWeb.Models.ViewModels.AdminDashboardViewModel 
+
+@{
+    ViewData["Title"] = "Admin Panel";
+    Layout = "_Layout";
+}
+
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Admin Panel</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">Manage website content, users, and server settings.</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/admin_panel_icon.png" alt="Admin Panel Icon" style="max-width: 250px; height: auto;" />
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow border-0 mb-5">
+                    <div class="card-header text-center">
+                        <h4 class="my-0 fw-bold">Dashboard Overview</h4>
+                    </div>
+                    <div class="card-body p-4 text-center">
+                        <p class="lead">Welcome to the Admin Panel, **@User.Identity.Name**!</p>
+                        <p>From here, you can access various administrative functions.</p>
+
+                        <div class="row mt-4 justify-content-center">
+                            <div class="col-md-4 mb-3">
+                                <div class="card bg-light p-3">
+                                    <h5>Online Players</h5>
+                                    <p class="fs-4 fw-bold">@Model.OnlinePlayers / @Model.MaxPlayers</p>
+                                </div>
+                            </div>
+                             <div class="col-md-4 mb-3">
+                                <div class="card bg-light p-3">
+                                    <h5>Total Registered Users</h5>
+                                    <p class="fs-4 fw-bold">@Model.TotalUsers</p>
+                                </div>
+                            </div>
+                            @* Diğer istatistikler buraya eklenebilir *@
+                        </div>
+
+                        <h5 class="mt-4">Quick Actions</h5>
+                        <div class="row mt-2 justify-content-center">
+                            <div class="col-md-4 mb-3">
+                                <a asp-controller="Admin" asp-action="Users" class="btn btn-primary btn-lg w-100">Manage Users</a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a asp-controller="Admin" asp-action="News" class="btn btn-secondary btn-lg w-100">Manage News</a> @* Assuming Admin/News action or dedicated NewsController *@
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a asp-controller="Admin" asp-action="Products" class="btn btn-success btn-lg w-100">Manage Products</a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a asp-controller="Admin" asp-action="ViewLogs" class="btn btn-info btn-lg w-100">View Logs</a>
+                            </div>
+                            @* Diğer hızlı erişim butonları buraya eklenebilir *@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // TempData'dan SweetAlert mesajlarını oku ve göster
+            ['SweetAlertSuccess', 'SweetAlertError', 'SweetAlertWarning'].forEach(function(key) {
+                if (sessionStorage.getItem(key)) {
+                    let iconType = key.replace('SweetAlert', '').toLowerCase();
+                    Swal.fire({
+                        icon: iconType,
+                        title: iconType.charAt(0).toUpperCase() + iconType.slice(1) + '!',
+                        text: sessionStorage.getItem(key),
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    sessionStorage.removeItem(key);
+                }
+            });
+        });
+    </script>
+}

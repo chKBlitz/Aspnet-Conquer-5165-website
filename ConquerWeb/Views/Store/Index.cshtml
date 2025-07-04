@@ -14,15 +14,13 @@
                     <p class="lead fw-normal text-white-50 mb-4">Discover exclusive in-game items and special packages to enhance your adventure!</p>
                 </div>
             </div>
-            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
-                <img class="img-fluid rounded-3 my-5" src="~/images/icons/store_icon.png" alt="Store Icon" style="max-width: 250px; height: auto;" />
-            </div>
         </div>
     </div>
 </header>
 
 <div class="py-5">
     <div class="container px-5">
+        @* ViewBag.ErrorMessage sadece karakter yoksa gösterilir. SweetAlert için TempData kullanmalısınız. *@
         @if (ViewBag.ErrorMessage != null)
         {
             <div class="row justify-content-center mb-4">
@@ -45,7 +43,7 @@
                                 <h4 class="my-0 fw-bold">@product.ProductName</h4>
                             </div>
                             <div class="card-body p-4 text-center">
-                                <img class="img-fluid mb-3 rounded" src="~/images/shop/@product.ProductImage" alt="@product.ProductName Image" style="max-height: 150px; object-fit: contain;">
+                                <img class="img-fluid mb-3 rounded" src="@product.ProductImage" alt="@product.ProductName Image" style="max-height: 150px; object-fit: contain;">
                                 <p class="card-text text-muted">@product.ProductDesc</p>
                                 <h3 class="fw-bold my-3">@product.ProductPrice.ToString("F2") @product.ProductCurrency</h3>
                                 <form asp-controller="Store" asp-action="ProcessPayment" method="post">
@@ -66,3 +64,23 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            ['SweetAlertSuccess', 'SweetAlertError', 'SweetAlertWarning'].forEach(function(key) {
+                if (sessionStorage.getItem(key)) {
+                    let iconType = key.replace('SweetAlert', '').toLowerCase();
+                    Swal.fire({
+                        icon: iconType,
+                        title: iconType.charAt(0).toUpperCase() + iconType.slice(1) + '!',
+                        text: sessionStorage.getItem(key),
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    sessionStorage.removeItem(key);
+                }
+            });
+        });
+    </script>
+}

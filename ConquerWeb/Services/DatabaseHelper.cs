@@ -1,7 +1,7 @@
 using MySql.Data.MySqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using ConquerWeb.Models;
+using ConquerWeb.Models; // News ve Account modelleri için
 using System;
 using System.Data;
 using Microsoft.Extensions.Caching.Memory;
@@ -93,6 +93,39 @@ namespace ConquerWeb.Services
                 using (var cmd = new MySqlCommand("SELECT UID, Username, Password, Email, Status, IP, SecretID, Creation_Date, Last_Login, Reset_Token, Reset_Token_Expiry FROM accounts WHERE Username = @username", conn))
                 {
                     cmd.Parameters.AddWithValue("@username", username);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Account
+                            {
+                                UID = reader.GetInt32("UID"),
+                                Username = reader.GetString("Username"),
+                                Password = reader.GetString("Password"),
+                                Email = reader.GetString("Email"),
+                                Status = reader.GetInt32("Status"),
+                                IP = reader.IsDBNull("IP") ? null : reader.GetString("IP"),
+                                SecretID = reader.IsDBNull("SecretID") ? null : reader.GetString("SecretID"),
+                                Creation_Date = reader.GetDateTime("Creation_Date"),
+                                Last_Login = reader.IsDBNull("Last_Login") ? (DateTime?)null : reader.GetDateTime("Last_Login"),
+                                Reset_Token = reader.IsDBNull("Reset_Token") ? null : reader.GetString("Reset_Token"),
+                                Reset_Token_Expiry = reader.IsDBNull("Reset_Token_Expiry") ? (DateTime?)null : reader.GetDateTime("Reset_Token_Expiry")
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public Account GetAccountByUid(int uid)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = new MySqlCommand("SELECT UID, Username, Password, Email, Status, IP, SecretID, Creation_Date, Last_Login, Reset_Token, Reset_Token_Expiry FROM accounts WHERE UID = @uid", conn))
+                {
+                    cmd.Parameters.AddWithValue("@uid", uid);
                     using (var reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
@@ -558,6 +591,85 @@ namespace ConquerWeb.Services
             return newsList;
         }
 
+        // YENÝ EKLENEN METOT: Haber ekler
+        public bool AddNews(News news)
+        {
+            using (var conn = GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "INSERT INTO news (title, content, author, publish_date) VALUES (@title, @content, @author, @publish_date)";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@title", news.Title);
+                        cmd.Parameters.AddWithValue("@content", news.Content);
+                        cmd.Parameters.AddWithValue("@author", news.Author);
+                        cmd.Parameters.AddWithValue("@publish_date", news.Publish_Date);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error adding news: {ex.Message} - Title: {news.Title}");
+                    return false;
+                }
+            }
+        }
+
+        // YENÝ EKLENEN METOT: Haber günceller
+        public bool UpdateNews(News news)
+        {
+            using (var conn = GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "UPDATE news SET title = @title, content = @content, author = @author, publish_date = @publish_date WHERE id = @id";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@title", news.Title);
+                        cmd.Parameters.AddWithValue("@content", news.Content);
+                        cmd.Parameters.AddWithValue("@author", news.Author);
+                        cmd.Parameters.AddWithValue("@publish_date", news.Publish_Date);
+                        cmd.Parameters.AddWithValue("@id", news.Id);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error updating news with ID {news.Id}: {ex.Message} - Title: {news.Title}");
+                    return false;
+                }
+            }
+        }
+
+        // YENÝ EKLENEN METOT: Haber siler
+        public bool DeleteNews(int newsId)
+        {
+            using (var conn = GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "DELETE FROM news WHERE id = @id";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", newsId);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error deleting news with ID {newsId}: {ex.Message}");
+                    return false;
+                }
+            }
+        }
+
         public List<DownloadItem> GetAllDownloads()
         {
             var downloadList = new List<DownloadItem>();
@@ -566,6 +678,7 @@ namespace ConquerWeb.Services
                 conn.Open();
                 using (var cmd = new MySqlCommand("SELECT id, title, description, file_name, file_size_mb, download_url, publish_date, category FROM downloads ORDER BY publish_date DESC", conn))
                 {
+                    cmd.Parameters.AddWithValue("@count", 100); // Varsayýlan 100 olarak belirttim, isteðe baðlý
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -625,7 +738,6 @@ namespace ConquerWeb.Services
             using (var conn = GetConnection())
             {
                 conn.Open();
-                // CharacterName'e göre ödeme kayýtlarýný çeker
                 using (var cmd = new MySqlCommand("SELECT ID, CharacterName, Currency, Amount, Email, VIPDays, DBScrolls, PayDate, paymentscol FROM payments WHERE CharacterName = @username ORDER BY PayDate DESC", conn))
                 {
                     cmd.Parameters.AddWithValue("@username", username);
@@ -651,7 +763,6 @@ namespace ConquerWeb.Services
             }
             return paymentRecords;
         }
-
         public OnlineStats GetOnlinePlayerStats()
         {
             using (var conn = GetConnection())
@@ -684,6 +795,229 @@ namespace ConquerWeb.Services
                 }
             }
             return null;
+        }
+
+        public List<Account> GetAllAccounts()
+        {
+            var accounts = new List<Account>();
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = new MySqlCommand("SELECT UID, Username, Email, Status, Creation_Date, Last_Login FROM accounts", conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            accounts.Add(new Account
+                            {
+                                UID = reader.GetInt32("UID"),
+                                Username = reader.GetString("Username"),
+                                Email = reader.GetString("Email"),
+                                Status = reader.GetInt32("Status"),
+                                Creation_Date = reader.GetDateTime("Creation_Date"),
+                                Last_Login = reader.IsDBNull("Last_Login") ? (DateTime?)null : reader.GetDateTime("Last_Login")
+                            });
+                        }
+                    }
+                }
+            }
+            return accounts;
+        }
+
+        public bool UpdateAccount(int uid, string newUsername, string newEmail, int newStatus)
+        {
+            using (var conn = GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "UPDATE accounts SET Username = @username, Email = @email, Status = @status WHERE UID = @uid";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@username", newUsername);
+                        cmd.Parameters.AddWithValue("@email", newEmail);
+                        cmd.Parameters.AddWithValue("@status", newStatus);
+                        cmd.Parameters.AddWithValue("@uid", uid);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    if (ex.Number == 1062)
+                    {
+                        if (ex.Message.Contains("Username"))
+                            LogError($"Account Update Error (Username Already In Use): UID {uid}, Username: {newUsername}");
+                        else if (ex.Message.Contains("Email"))
+                            LogError($"Account Update Error (Email Already In Use): UID {uid}, Email: {newEmail}");
+                    }
+                    LogError($"Database Error during account update for UID {uid}: {ex.Message}");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Unexpected error during account update for UID {uid}: {ex.Message}");
+                    return false;
+                }
+            }
+        }
+
+        public bool DeleteAccount(int uid)
+        {
+            using (var conn = GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    using (var cmdChar = new MySqlCommand("DELETE FROM characters WHERE UID = @uid", conn))
+                    {
+                        cmdChar.Parameters.AddWithValue("@uid", uid);
+                        cmdChar.ExecuteNonQuery();
+                    }
+
+                    using (var cmdAcc = new MySqlCommand("DELETE FROM accounts WHERE UID = @uid", conn))
+                    {
+                        cmdAcc.Parameters.AddWithValue("@uid", uid);
+                        int rowsAffected = cmdAcc.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            LogError($"Account with UID {uid} deleted successfully.");
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    LogError($"Database Error deleting account for UID {uid}: {ex.Message}");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Unexpected error deleting account for UID {uid}: {ex.Message}");
+                    return false;
+                }
+            }
+        }
+
+        public List<LogEntry> GetLogs(int count = 100)
+        {
+            var logs = new List<LogEntry>();
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = new MySqlCommand("SELECT id, log_data, timestamp FROM logs ORDER BY timestamp DESC LIMIT @count", conn))
+                {
+                    cmd.Parameters.AddWithValue("@count", count);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            logs.Add(new LogEntry
+                            {
+                                Id = reader.GetInt32("id"),
+                                LogData = reader.GetString("log_data"),
+                                Timestamp = reader.GetDateTime("timestamp")
+                            });
+                        }
+                    }
+                }
+            }
+            return logs;
+        }
+
+        public int GetTotalUserCount()
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM accounts", conn))
+                {
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+        }
+        public bool AddProduct(Product product)
+        {
+            using (var conn = GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "INSERT INTO vtm_store (product_name, product_price, product_currency, product_desc, DBScrolls, product_image) VALUES (@productName, @productPrice, @productCurrency, @productDesc, @dbScrolls, @productImage)";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@productName", product.ProductName);
+                        cmd.Parameters.AddWithValue("@productPrice", product.ProductPrice);
+                        cmd.Parameters.AddWithValue("@productCurrency", product.ProductCurrency);
+                        cmd.Parameters.AddWithValue("@productDesc", product.ProductDesc);
+                        cmd.Parameters.AddWithValue("@dbScrolls", product.DBScrolls);
+                        cmd.Parameters.AddWithValue("@productImage", product.ProductImage);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error adding product: {ex.Message} - Product: {product.ProductName}");
+                    return false;
+                }
+            }
+        }
+
+        // Yeni metot: Ürün günceller
+        public bool UpdateProduct(Product product)
+        {
+            using (var conn = GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "UPDATE vtm_store SET product_name = @productName, product_price = @productPrice, product_currency = @productCurrency, product_desc = @productDesc, DBScrolls = @dbScrolls, product_image = @productImage WHERE product_id = @productId";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@productName", product.ProductName);
+                        cmd.Parameters.AddWithValue("@productPrice", product.ProductPrice);
+                        cmd.Parameters.AddWithValue("@productCurrency", product.ProductCurrency);
+                        cmd.Parameters.AddWithValue("@productDesc", product.ProductDesc);
+                        cmd.Parameters.AddWithValue("@dbScrolls", product.DBScrolls);
+                        cmd.Parameters.AddWithValue("@productImage", product.ProductImage);
+                        cmd.Parameters.AddWithValue("@productId", product.ProductId);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error updating product with ID {product.ProductId}: {ex.Message} - Product: {product.ProductName}");
+                    return false;
+                }
+            }
+        }
+
+        // Yeni metot: Ürün siler
+        public bool DeleteProduct(int productId)
+        {
+            using (var conn = GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "DELETE FROM vtm_store WHERE product_id = @productId";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@productId", productId);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error deleting product with ID {productId}: {ex.Message}");
+                    return false;
+                }
+            }
         }
     }
 }

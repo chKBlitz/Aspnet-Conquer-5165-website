@@ -36,7 +36,7 @@ namespace ConquerWeb.Controllers
             if (character == null)
             {
                 ViewBag.ErrorMessage = "You must create a character before making a donation!";
-                return View("NoCharacter");
+                return View("NoCharacter"); // Bu View'in (Views/Store/NoCharacter.cshtml) mevcut olduğundan emin olun.
             }
 
             ViewBag.CharacterName = character.Name;
@@ -60,7 +60,7 @@ namespace ConquerWeb.Controllers
             if (character == null)
             {
                 ViewBag.ErrorMessage = "Your character was not found. Please create a character first.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Index"); // Mağaza ana sayfasına geri dön
             }
 
             Product product = _dbHelper.GetProductById(productId);
@@ -83,20 +83,20 @@ namespace ConquerWeb.Controllers
                 {
                     _dbHelper.LogError($"PayPal approval URL not found. Payment ID: {payment.id}");
                     ViewBag.ErrorMessage = "Failed to create PayPal payment link. Please try again.";
-                    return View("Error");
+                    return View("Error"); // Genişletilmiş hata sayfası
                 }
             }
             catch (PayPalException ex)
             {
                 _dbHelper.LogError($"PayPal API Error (CreatePayment): {ex.Message} - Details: {ex.Data}");
                 ViewBag.ErrorMessage = $"An error occurred during PayPal payment: {ex.Message}";
-                return View("Error");
+                return View("Error"); // Genişletilmiş hata sayfası
             }
             catch (Exception ex)
             {
                 _dbHelper.LogError($"Unexpected error (ProcessPayment): {ex.Message}");
                 ViewBag.ErrorMessage = "An unexpected error occurred. Please try again.";
-                return View("Error");
+                return View("Error"); // Genişletilmiş hata sayfası
             }
         }
     }

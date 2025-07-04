@@ -1,0 +1,103 @@
+﻿@using ConquerWeb.Models
+@model List<Account>
+
+@{
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+    Layout = "_Layout";
+}
+
+<header class="bg-dark py-5">
+    <div class="container px-5">
+        <div class="row gx-5 align-items-center justify-content-center">
+            <div class="col-lg-8 col-xl-7 col-xxl-6">
+                <div class="my-5 text-center text-xl-start">
+                    <h1 class="display-5 fw-bolder text-white mb-2">Manage Users</h1>
+                    <p class="lead fw-normal text-white-50 mb-4">View and manage all registered user accounts.</p>
+                </div>
+            </div>
+            <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                <img class="img-fluid rounded-3 my-5" src="~/images/icons/manage_users_icon.png" alt="Manage Users Icon" style="max-width: 250px; height: auto;" />
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow border-0">
+                    <div class="card-header text-center">
+                        <h4 class="my-0 fw-bold">All Accounts</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        @if (Model != null && Model.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>UID</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th>Registration Date</th>
+                                            <th>Last Login</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var account in Model.OrderBy(a => a.Username))
+                                        {
+                                            <tr>
+                                                <td>@account.UID</td>
+                                                <td>@account.Username</td>
+                                                <td>@account.Email</td>
+                                                <td>@account.Status @(account.Status == 3 ? "(Admin)" : (account.Status == 0 ? "(User)" : ""))</td>
+                                                <td>@account.Creation_Date.ToShortDateString()</td>
+                                                <td>@(account.Last_Login.HasValue? account.Last_Login.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</td> @* Tarih formatını güncelledik *@
+                                                <td>
+                                                    <a asp-controller="Admin" asp-action="EditUser" asp-route-uid="@account.UID" class="btn btn-sm btn-primary">Edit</a>
+                                                    @* Silme butonu için form ekledik *@
+                                                    <form asp-controller="Admin" asp-action="DeleteUser" method="post" style="display:inline;" onsubmit="return confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!');">
+                                                        <input type="hidden" name="uid" value="@account.UID" />
+                                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-center alert alert-info">No user accounts found.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // TempData'dan SweetAlert mesajlarını oku ve göster
+            ['SweetAlertSuccess', 'SweetAlertError', 'SweetAlertWarning'].forEach(function(key) {
+                if (sessionStorage.getItem(key)) {
+                    let iconType = key.replace('SweetAlert', '').toLowerCase();
+                    Swal.fire({
+                        icon: iconType,
+                        title: iconType.charAt(0).toUpperCase() + iconType.slice(1) + '!',
+                        text: sessionStorage.getItem(key),
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    sessionStorage.removeItem(key);
+                }
+            });
+        });
+    </script>
+}

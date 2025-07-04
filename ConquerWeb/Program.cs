@@ -1,67 +1,88 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
-using ConquerWeb.Models;
-using ConquerWeb.Services;
+using System.Security.Claims; // Although not directly used in Program.cs snippet, it's relevant for auth
+using ConquerWeb.Models; // Assuming your models like Account, Character, etc. are here
+using ConquerWeb.Services; // Assuming your services like DatabaseHelper, SecurityHelper, PayPalClient are here
+using System; // For TimeSpan
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Bellek içi önbellekleme servisini ekle
+// Bellek içi önbellekleme servisini ekle (IMemoryCache için)
 builder.Services.AddMemoryCache();
 
-// Oturum hizmetini ekle
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum süresi
-    options.Cookie.HttpOnly = true; // Sadece HTTP üzerinden eriþilebilir çerezler
-    options.Cookie.IsEssential = true; // Oturum için gerekli çerezler
-});
-
 // DatabaseHelper, SecurityHelper ve PayPalClient sýnýflarýný baðýmlýlýk enjeksiyonuna ekle
-builder.Services.AddScoped<DatabaseHelper>(); // Her istek için yeni bir örnek
-builder.Services.AddScoped<SecurityHelper>(); // Her istek için yeni bir örnek
-builder.Services.AddSingleton<PayPalClient>(); // Uygulama ömrü boyunca tek örnek
+// DatabaseHelper ve SecurityHelper için Scoped ömrü çoðu senaryo için uygundur.
+// PayPalClient için Singleton ömrü, uygulamanýn ömrü boyunca tek bir örnek kullanýlmasýný saðlar.
+builder.Services.AddScoped<DatabaseHelper>();
+builder.Services.AddScoped<SecurityHelper>();
+builder.Services.AddSingleton<PayPalClient>();
 
-// HttpClientFactory hizmetini ekle (PaymentController için gerekli)
+// HttpClientFactory hizmetini ekle (PayPalClient veya diðer HTTP istekleri için gerekli)
 builder.Services.AddHttpClient();
 
+// Oturum hizmetini ekle
+// Bu, HTTP istekleri arasýnda kullanýcý verilerini depolamak için kullanýlýr.
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum süresi (örneðin 30 dakika)
+    options.Cookie.HttpOnly = true; // Sadece HTTP üzerinden eriþilebilir çerezler (JavaScript eriþimini engeller)
+    options.Cookie.IsEssential = true; // Oturum için gerekli çerezler (KVKK / GDPR uyumluluðu için önemli olabilir)
+});
 
 // Kimlik doðrulama hizmetini ekle (Cookie tabanlý kimlik doðrulama)
+// Bu, uygulamanýzýn kullanýcýlarý nasýl tanýdýðýný ve oturumlarýný nasýl yönettiðini yapýlandýrýr.
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Login"; // Kullanýcý giriþ yapmadýðýnda yönlendirilecek yol
+                                      // Not: Sizin eski kodunuzda "/Account/Login" idi. Eðer AccountController'ýnýz Login action'ýný bu yolda bekliyorsa bu doðru.
+                                      // Routing'de Login'i Account/Login'e maplediðiniz için "/Login" sorun olmayacaktýr.
         options.LogoutPath = "/Account/Logout"; // Çýkýþ yapýldýðýnda yönlendirilecek yol
         options.AccessDeniedPath = "/Account/AccessDenied"; // Yetkisiz eriþimde yönlendirilecek yol
-        options.ExpireTimeSpan = TimeSpan.FromDays(7); // Kimlik doðrulama çerezinin geçerlilik süresi
-        options.SlidingExpiration = true; // Çerez ömrü, kullanýcý etkinken uzatýlýr
+        options.ExpireTimeSpan = TimeSpan.FromDays(7); // Kimlik doðrulama çerezinin geçerlilik süresi (örneðin 7 gün)
+        options.SlidingExpiration = true; // Çerez ömrü, kullanýcý etkinken uzatýlýr (yeniden oturum açmayý geciktirir)
     });
 
-builder.Services.AddAuthorization(); // Yetkilendirme hizmetini ekle
+// Yetkilendirme hizmetini ekle
+// Bu, kimlik doðrulandýktan sonra kullanýcýnýn belirli kaynaklara eriþim yetkisini kontrol eder.
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+// Geliþtirme ortamý deðilse hata iþleme ve HSTS'yi kullan.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error"); // Hata durumunda yönlendirilecek sayfa
-    app.UseHsts();
+    app.UseHsts(); // HTTP Strict Transport Security
 }
 
-app.UseHttpsRedirection(); // HTTP isteklerini HTTPS'ye yönlendir
-app.UseStaticFiles(); // wwwroot klasöründeki statik dosyalarý (CSS, JS, resimler) sun
+// HTTP isteklerini HTTPS'ye yönlendir
+app.UseHttpsRedirection();
 
-app.UseRouting(); // Endpoint routing'i etkinleþtir
+// wwwroot klasöründeki statik dosyalarý (CSS, JS, resimler) sun
+app.UseStaticFiles();
 
-app.UseSession(); // Oturumu kullan (UseRouting sonrasý, UseAuthentication öncesi olmalý)
+// Endpoint routing'i etkinleþtir
+app.UseRouting();
 
-app.UseAuthentication(); // Kimlik doðrulama middleware'ini ekle
-app.UseAuthorization();  // Yetkilendirme middleware'ini ekle (UseAuthentication sonrasý olmalý)
+// Oturum middleware'ini ekle
+// Oturum verilerine eriþim saðlamak için UseRouting sonrasý, UseAuthentication öncesi olmalý.
+app.UseSession();
+
+// Kimlik doðrulama middleware'ini ekle
+// Kimliði doðrulanmýþ kullanýcýnýn kimliðini HTTP baðlamýna ekler.
+app.UseAuthentication();
+
+// Yetkilendirme middleware'ini ekle
+// Kimliði doðrulanmýþ kullanýcýnýn yetkilerini kontrol eder. UseAuthentication sonrasý olmalý.
+app.UseAuthorization();
 
 // Controller route'larýný ayarla
+// PHP uyumluluðu veya özel URL yapýlandýrmalarý için özel rotalar
 app.MapControllerRoute(
     name: "login_php_compat",
     pattern: "Login", // PHP'deki /Login karþýlýðý
@@ -93,8 +114,10 @@ app.MapControllerRoute(
     defaults: new { controller = "Payment", action = "Receive" });
 
 
+// Varsayýlan route her zaman en sonda olmalý
+// Bu, uygulamanýzdaki genel Controller/Action/ID deseni için kullanýlýr.
 app.MapControllerRoute(
-    name: "default", // Varsayýlan route her zaman en sonda olmalý
+    name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

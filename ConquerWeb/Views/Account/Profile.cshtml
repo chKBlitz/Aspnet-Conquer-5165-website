@@ -45,6 +45,26 @@
                             {
                                 <p><strong>Character Name:</strong> @Model.Character.Name</p>
                                 <p><strong>Profession:</strong> @Model.Character.JobName</p>
+                                <p><strong>Level:</strong> @Model.Character.Level</p>
+                                <p><strong>Experience:</strong> @Model.Character.Experience.ToString("N0")</p>
+                                <p><strong>CPs:</strong> @Model.Character.CPs.ToString("N0")</p>
+                                <p><strong>DB Scrolls:</strong> @Model.Character.DBScrolls</p>
+                                <p><strong>VIP Level:</strong> @Model.Character.VIPLevel</p>
+                                <p><strong>PK Points:</strong> @Model.Character.PKPoints.ToString("N0")</p>
+                                <p><strong>Nobility:</strong> @Model.Character.Nobility</p>
+                                <p><strong>Guild ID:</strong> @Model.Character.GuildID</p>
+                                <p><strong>Total Online Time:</strong> @(Model.Character.OnlineTime / 60) hours @(Model.Character.OnlineTime % 60) minutes</p>
+                                <p><strong>Last Game Login:</strong> @(Model.Character.LastLogin.HasValue ? Model.Character.LastLogin.Value.ToString() : "Unknown")</p>
+
+                                <hr class="my-4" />
+                                <h5 class="mb-3">Appearance Details</h5>
+                                <ul>
+                                    <li><strong>Body ID:</strong> @Model.Character.Body</li>
+                                    <li><strong>Face ID:</strong> @Model.Character.Face</li>
+                                    <li><strong>Hair ID:</strong> @Model.Character.Hair</li>
+                                    <li><strong>Spouse:</strong> @(string.IsNullOrEmpty(Model.Character.Spouse) ? "None" : Model.Character.Spouse)</li>
+                                    @* Diğer görünüş veya daha az kullanılan detaylar buraya eklenebilir *@
+                                </ul>
                             }
                             else
                             {
